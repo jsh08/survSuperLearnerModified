@@ -666,7 +666,7 @@ survscreen.glmnet <- function(time, event, X, obsWeights, alpha = 1, minscreen =
                                   weights = obsWeights, family = 'cox', alpha = alpha, nfolds = nfolds, nlambda = nlambda)
 
   whichVariable <- (as.numeric(coef(fit.glmnet$glmnet.fit, s = fit.glmnet$lambda.min)) != 0)
-  if (sum(whichVariable) < minscreen) {
+  if (sum(whichVariable, na.rm = TRUE) < minscreen) {
     warning("fewer than minscreen variables passed the glmnet screen, increased lambda to allow minscreen variables")
     sumCoef <- apply(as.matrix(fit.glmnet$glmnet.fit$beta), 2, function(x) sum((x != 0)))
     newCut <- which.max(sumCoef >= minscreen)
@@ -700,7 +700,7 @@ survscreen.marg <- function(time, event, X, obsWeights, minscreen = 2, min.p = 0
     summary(est)$waldtest['pvalue']
   })
   whichVariable <- pvals <= .1
-  if(sum(whichVariable) < minscreen) {
+  if(sum(whichVariable, na.rm = TRUE) < minscreen) {
     whichVariable <- rep(FALSE, ncol(X))
     whichVariable[order(pvals)[1:minscreen]] <- TRUE
   }
